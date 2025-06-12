@@ -55,36 +55,6 @@ class TripViewSet(viewsets.ModelViewSet):
 class StopTimeViewSet(viewsets.ModelViewSet):
     queryset = StopTime.objects.all()
     serializer_class = StopTimeSerializer
-from rest_framework import viewsets
-from .models import Agency, Stop, Route, Service, Trip, StopTime
-from .serializers import (
-    AgencySerializer, StopSerializer, RouteSerializer,
-    ServiceSerializer, TripSerializer, StopTimeSerializer
-)
-
-class AgencyViewSet(viewsets.ModelViewSet):
-    queryset = Agency.objects.all()
-    serializer_class = AgencySerializer
-
-class StopViewSet(viewsets.ModelViewSet):
-    queryset = Stop.objects.all()
-    serializer_class = StopSerializer
-
-class RouteViewSet(viewsets.ModelViewSet):
-    queryset = Route.objects.all()
-    serializer_class = RouteSerializer
-
-class ServiceViewSet(viewsets.ModelViewSet):
-    queryset = Service.objects.all()
-    serializer_class = ServiceSerializer
-
-class TripViewSet(viewsets.ModelViewSet):
-    queryset = Trip.objects.all()
-    serializer_class = TripSerializer
-
-class StopTimeViewSet(viewsets.ModelViewSet):
-    queryset = StopTime.objects.all()
-    serializer_class = StopTimeSerializer
 
 
 @router.register(r"users/me/", name="users")
