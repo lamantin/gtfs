@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>GTFS Útvonaltervező</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map { height: 80vh; }
+    #form-container { padding: 10px; }
+  </style>
+</head>
+<body>
+  <h2>GTFS Útvonaltervező</h2>
+
+  <div id="form-container">
+    <label>Útvonal neve: <input id="route_name" /></label><br>
+    <label>Útvonal ID: <input id="route_id" /></label><br>
+    <label>Szín (HEX): <input id="color" value="0000FF" /></label><br>
+    <label>Járműtípus: <select id="route_type">
+      <option value="3">Busz</option>
+      <option value="0">Vasút</option>
+    </select></label><br>
+    <label>Érvényesség: <input type="date" id="start_date" /> - <input type="date" id="end_date" /></label><br>
+    <label>Napok:
+      <input type="checkbox" id="monday" checked />H
+      <input type="checkbox" id="tuesday" checked />K
+      <input type="checkbox" id="wednesday" checked />Sz
+      <input type="checkbox" id="thursday" checked />Cs
+      <input type="checkbox" id="friday" checked />P
+      <input type="checkbox" id="saturday" />Szo
+      <input type="checkbox" id="sunday" />V
+    </label><br><br>
+    <button onclick="saveAll()">Mentés</button>
+  </div>
+
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+  const map = L.map('map').setView([47.5, 19.05], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+  let stops = [];
+  let routeLine = null; // ez lesz a vonal
+
+  function redrawPolyline() {
+    const latlngs = stops.map(stop => [stop.lat, stop.lon]);
+
+    if (routeLine) {
+      routeLine.setLatLngs(latlngs);
+    } else {
+      routeLine = L.polyline(latlngs, { color: 'blue' }).addTo(map);
+    }
+  }
+
+  function addStop(latlng) {
+    const stop_id = `stop_${stops.length + 1}`;
+    const marker = L.marker(latlng).addTo(map);
+
+    let popupContent = `
+      <b>Megálló ID:</b> <input value="${stop_id}" onchange="updateStop(${stops.length}, 'stop_id', this.value)" /><br>
+      <b>Név:</b> <input value="Megálló ${stops.length + 1}" onchange="updateStop(${stops.length}, 'name', this.value)" /><br>
+      <b>Pihenőidő (perc):</b> <input type="number" value="0" onchange="updateStop(${stops.length}, 'rest_time', this.value)" />
+    `;
+
+    marker.bindPopup(popupContent).openPopup();
+
+    stops.push({
+      stop_id: stop_id,
+      name: `Megálló ${stops.length + 1}`,
+      lat: latlng.lat,
+      lon: latlng.lng,
+      rest_time: 0,
+      sequence: stops.length + 1,
+    });
+
+    redrawPolyline(); // Újrarajzolás minden hozzáadás után
+  }
+
+  function updateStop(index, field, value) {
+    if (field === 'rest_time') {
+      stops[index][field] = parseInt(value);
+    } else {
+      stops[index][field] = value;
+    }
+  }
+
+  map.on('click', (e) => {
+    addStop(e.latlng);
+  });
+</script>
+
+
+</body>
+</html>

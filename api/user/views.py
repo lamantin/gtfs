@@ -12,6 +12,18 @@ from api.common.routers import CustomViewRouter
 from api.user import serializers
 from api.user.models import User
 from api.user.permissions import IsStaffPermission
+from django.http import FileResponse
+from rest_framework.decorators import api_view
+
+from rest_framework import status
+import os
+
+from rest_framework import viewsets
+from .models import Agency, Stop, Route, Service, Trip, StopTime
+from .serializers import (
+    AgencySerializer, StopSerializer, RouteSerializer,
+    ServiceSerializer, TripSerializer, StopTimeSerializer
+)
 
 if TYPE_CHECKING:
     from rest_framework.request import Request
@@ -19,6 +31,60 @@ if TYPE_CHECKING:
 router = CustomViewRouter()
 
 logger = logging.getLogger(__name__)
+
+class AgencyViewSet(viewsets.ModelViewSet):
+    queryset = Agency.objects.all()
+    serializer_class = AgencySerializer
+
+class StopViewSet(viewsets.ModelViewSet):
+    queryset = Stop.objects.all()
+    serializer_class = StopSerializer
+
+class RouteViewSet(viewsets.ModelViewSet):
+    queryset = Route.objects.all()
+    serializer_class = RouteSerializer
+
+class ServiceViewSet(viewsets.ModelViewSet):
+    queryset = Service.objects.all()
+    serializer_class = ServiceSerializer
+
+class TripViewSet(viewsets.ModelViewSet):
+    queryset = Trip.objects.all()
+    serializer_class = TripSerializer
+
+class StopTimeViewSet(viewsets.ModelViewSet):
+    queryset = StopTime.objects.all()
+    serializer_class = StopTimeSerializer
+from rest_framework import viewsets
+from .models import Agency, Stop, Route, Service, Trip, StopTime
+from .serializers import (
+    AgencySerializer, StopSerializer, RouteSerializer,
+    ServiceSerializer, TripSerializer, StopTimeSerializer
+)
+
+class AgencyViewSet(viewsets.ModelViewSet):
+    queryset = Agency.objects.all()
+    serializer_class = AgencySerializer
+
+class StopViewSet(viewsets.ModelViewSet):
+    queryset = Stop.objects.all()
+    serializer_class = StopSerializer
+
+class RouteViewSet(viewsets.ModelViewSet):
+    queryset = Route.objects.all()
+    serializer_class = RouteSerializer
+
+class ServiceViewSet(viewsets.ModelViewSet):
+    queryset = Service.objects.all()
+    serializer_class = ServiceSerializer
+
+class TripViewSet(viewsets.ModelViewSet):
+    queryset = Trip.objects.all()
+    serializer_class = TripSerializer
+
+class StopTimeViewSet(viewsets.ModelViewSet):
+    queryset = StopTime.objects.all()
+    serializer_class = StopTimeSerializer
 
 
 @router.register(r"users/me/", name="users")
@@ -41,3 +107,10 @@ class UserViewSet(
     serializer_class = serializers.UserSerializer
     queryset = User.objects.all()
     permission_classes = (IsStaffPermission,)
+
+@api_view(['GET'])
+def gtfs_export_download(request):
+    zip_path = os.path.join('static', 'gtfs_feed.zip')
+    if os.path.exists(zip_path):
+        return FileResponse(open(zip_path, 'rb'), content_type='application/zip')
+    return Response({'detail': 'GTFS feed not found.'}, status=status.HTTP_404_NOT_FOUND)
