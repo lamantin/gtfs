@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-import os
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from django.http import FileResponse
@@ -33,25 +33,31 @@ router = CustomViewRouter()
 
 logger = logging.getLogger(__name__)
 
+
 class AgencyViewSet(viewsets.ModelViewSet):
     queryset = Agency.objects.all()
     serializer_class = AgencySerializer
+
 
 class StopViewSet(viewsets.ModelViewSet):
     queryset = Stop.objects.all()
     serializer_class = StopSerializer
 
+
 class RouteViewSet(viewsets.ModelViewSet):
     queryset = Route.objects.all()
     serializer_class = RouteSerializer
+
 
 class ServiceViewSet(viewsets.ModelViewSet):
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
 
+
 class TripViewSet(viewsets.ModelViewSet):
     queryset = Trip.objects.all()
     serializer_class = TripSerializer
+
 
 class StopTimeViewSet(viewsets.ModelViewSet):
     queryset = StopTime.objects.all()
@@ -79,9 +85,10 @@ class UserViewSet(
     queryset = User.objects.all()
     permission_classes = (IsStaffPermission,)
 
+
 @api_view(["GET"])
-def gtfs_export_download(request):
-    zip_path = os.path.join("static", "gtfs_feed.zip")
-    if os.path.exists(zip_path):
-        return FileResponse(open(zip_path, "rb"), content_type="application/zip")
+def gtfs_export_download() -> FileResponse | Response:
+    zip_path = Path("static/gtfs_feed.zip")
+    if zip_path.exists():
+        return FileResponse(zip_path.open("rb"), content_type="application/zip")
     return Response({"detail": "GTFS feed not found."}, status=status.HTTP_404_NOT_FOUND)
