@@ -76,7 +76,7 @@ class CustomDomainS3Storage(S3Storage):
         http_method: Any = None,
     ) -> str:
         """Replace internal domain with custom domain for signed URLs."""
-        url = cast(str, super().url(name, parameters, expire, http_method))
+        url = cast("str", super().url(name, parameters, expire, http_method))
 
         return url.replace(
             f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com",

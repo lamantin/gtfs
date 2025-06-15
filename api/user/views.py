@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import logging
+import os
 from typing import TYPE_CHECKING
 
-from rest_framework import mixins
+from django.http import FileResponse
+from rest_framework import mixins, status, viewsets
+from rest_framework.decorators import api_view
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
@@ -12,17 +15,15 @@ from api.common.routers import CustomViewRouter
 from api.user import serializers
 from api.user.models import User
 from api.user.permissions import IsStaffPermission
-from django.http import FileResponse
-from rest_framework.decorators import api_view
 
-from rest_framework import status
-import os
-
-from rest_framework import viewsets
-from .models import Agency, Stop, Route, Service, Trip, StopTime
+from .models import Agency, Route, Service, Stop, StopTime, Trip
 from .serializers import (
-    AgencySerializer, StopSerializer, RouteSerializer,
-    ServiceSerializer, TripSerializer, StopTimeSerializer
+    AgencySerializer,
+    RouteSerializer,
+    ServiceSerializer,
+    StopSerializer,
+    StopTimeSerializer,
+    TripSerializer,
 )
 
 if TYPE_CHECKING:
@@ -78,9 +79,9 @@ class UserViewSet(
     queryset = User.objects.all()
     permission_classes = (IsStaffPermission,)
 
-@api_view(['GET'])
+@api_view(["GET"])
 def gtfs_export_download(request):
-    zip_path = os.path.join('static', 'gtfs_feed.zip')
+    zip_path = os.path.join("static", "gtfs_feed.zip")
     if os.path.exists(zip_path):
-        return FileResponse(open(zip_path, 'rb'), content_type='application/zip')
-    return Response({'detail': 'GTFS feed not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return FileResponse(open(zip_path, "rb"), content_type="application/zip")
+    return Response({"detail": "GTFS feed not found."}, status=status.HTTP_404_NOT_FOUND)

@@ -42,10 +42,10 @@ class CustomViewRouter:
                     path(route, view.as_view(**(as_view_kwargs or {})), **kwargs),
                 )
 
-            return cast(T, view)
+            return cast("T", view)
 
         return decorator
 
     @property
     def urls(self) -> list[Any]:
-        return cast(list[Any], self._paths + self._drf_router.urls)
+        return cast("list[Any]", self._paths + self._drf_router.urls)

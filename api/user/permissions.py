@@ -10,4 +10,4 @@ if TYPE_CHECKING:
 
 class IsStaffPermission(permissions.BasePermission):
     def has_permission(self, request: Request, view: Any) -> bool:  # noqa: ARG002
-        return cast(bool, request.user.is_staff)
+        return cast("bool", request.user.is_staff)
